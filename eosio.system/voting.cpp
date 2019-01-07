@@ -34,30 +34,65 @@ namespace eosiosystem {
     *  @pre authority of producer to register
     *
     */
-   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, const std::string& url, uint16_t location ) {
+   // void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, const std::string& url, uint16_t location ) {
+   //    eosio_assert( url.size() < 512, "url too long" );
+   //    eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
+   //    require_auth( producer );
+
+   //    auto prod = _producers.find( producer );
+
+   //    if ( prod != _producers.end() ) {
+   //       _producers.modify( prod, producer, [&]( producer_info& info ){
+   //             info.producer_key = producer_key;
+   //             info.is_active    = true;
+   //             info.url          = url;
+   //             info.location     = location;
+   //          });
+   //    } else {
+   //       _producers.emplace( producer, [&]( producer_info& info ){
+   //             info.owner         = producer;
+   //             info.total_votes   = 0;
+   //             info.producer_key  = producer_key;
+   //             info.is_active     = true;
+   //             info.url           = url;
+   //             info.location      = location;
+   //       });
+   //    }
+   // }
+
+   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, asset maximum_supply, const std::string& url, uint16_t location ) {
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
+      auto itr = _producers.find(producer);
+      eosio_assert( itr == _producers.end(), "producer name is already exist" );
       require_auth( producer );
 
-      auto prod = _producers.find( producer );
+      INLINE_ACTION_SENDER(eosio::token, create)( N(eosio.token), {producer,N(active)}},
+                                                    {producer, maximum_supply} );
 
-      if ( prod != _producers.end() ) {
-         _producers.modify( prod, producer, [&]( producer_info& info ){
-               info.producer_key = producer_key;
-               info.is_active    = true;
-               info.url          = url;
-               info.location     = location;
-            });
-      } else {
-         _producers.emplace( producer, [&]( producer_info& info ){
-               info.owner         = producer;
-               info.total_votes   = 0;
-               info.producer_key  = producer_key;
-               info.is_active     = true;
-               info.url           = url;
-               info.location      = location;
-         });
-      }
+      _producers.emplace( producer, [&]( producer_info& info ){
+         info.owner         = producer;
+         info.total_votes   = 0;
+         info.producer_key  = producer_key;
+         info.is_active     = true;
+         info.url           = url;
+         info.location      = location;
+      });
+   }
+
+   void system_contract::updateproducer( const account_name producer, const eosio::public_key& producer_key, const std::string& url, uint16_t location ) {
+      eosio_assert( url.size() < 512, "url too long" );
+      eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
+      auto itr = _producers.find(producer);
+      eosio_assert( itr != _producers.end(), "producer name is not exist" );
+      require_auth( producer );
+
+      _producers.modify( itr, producer, [&]( producer_info& info ){
+         info.producer_key = producer_key;
+         info.is_active    = true;
+         info.url          = url;
+         info.location     = location;
+      });
    }
 
    void system_contract::unregprod( const account_name producer ) {
