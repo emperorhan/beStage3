@@ -282,6 +282,16 @@
       "name": "regproducer",
       "base": "",
       "fields": [
+        {"name":"producer",       "type":"account_name"},
+        {"name":"producer_key",   "type":"public_key"},
+        {"name":"url",            "type":"string"},
+        {"name":"location",       "type":"uint16"},
+        {"name":"maximum_supply", "type":"asset"}
+      ]
+    },{
+      "name": "updateproducer",
+      "base": "",
+      "fields": [
         {"name":"producer",     "type":"account_name"},
         {"name":"producer_key", "type":"public_key"},
         {"name":"url",          "type":"string"},
@@ -467,6 +477,10 @@
    },{
       "name": "regproducer",
       "type": "regproducer",
+      "ricardian_contract": ""
+   },{
+      "name": "updateproducer",
+      "type": "updateproducer",
       "ricardian_contract": ""
    },{
       "name": "setram",
