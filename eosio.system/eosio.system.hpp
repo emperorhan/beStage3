@@ -100,7 +100,7 @@ namespace eosiosystem {
       void     deactivate()       { producer_key = public_key(); is_active = false; }
       void     set_vote_weight(double vote)  {
          int64_t vote_date = ((now() - (block_timestamp::block_timestamp_epoch / 1000)) / (24 * 3600)); 
-         int64_t idx = vote_date % 30; // idx => 0 ~ 29
+         int32_t idx = vote_date % 30; // idx => 0 ~ 29
          vote_weight_window_date[idx] = vote_date;
          if(idx != privIdx){
             if(privIdx != 31) {

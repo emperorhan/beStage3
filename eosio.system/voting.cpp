@@ -120,7 +120,7 @@ namespace eosiosystem {
             _producers.modify( p, 0, [&]( producer_info& info ){
                info.set_vote_weight(0);
             });
-            if(p.decrease_vote_weight){
+            if(p.decrease_vote_weight > 0){
                _gstate.total_producer_vote_weight -= p.decrease_vote_weight;
                _producers.modify( p, 0, [&]( producer_info& info ){
                   info.decrease_vote_weight = 0;
