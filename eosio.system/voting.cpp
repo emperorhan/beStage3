@@ -271,10 +271,10 @@ namespace eosiosystem {
             auto payment_token = asset(static_cast<int64_t>((double)pitr->transfer_ratio.amount * vote_weight), pitr->transfer_ratio.symbol);
 
             INLINE_ACTION_SENDER(eosio::token, issue)( N(eosio.token), {{N(eosio),N(active)}},
-                                                    {pn, payment_token, std::string("issue tokens for CR burner")} );
+                                                    {burner, payment_token, std::string("issue tokens for CR burner")} );
 
-            INLINE_ACTION_SENDER(eosio::token, transfer)( N(eosio.token), {{N(eosio), N(active)}, 
-            { pn, burner, payment_token, std::string("transfer tokens for burner " + burner_name.to_string()) } );
+            // INLINE_ACTION_SENDER(eosio::token, transfer)( N(eosio.token), {{N(eosio), N(active)}, 
+            // { pn, burner, payment_token, std::string("transfer tokens for burner " + burner_name.to_string()) } );
          }
       }
    }
