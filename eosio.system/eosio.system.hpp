@@ -178,6 +178,16 @@ namespace eosiosystem {
       EOSLIB_SERIALIZE( voter_info, (owner)(proxy)(producers)(staked)(last_vote_weight)(proxied_vote_weight)(is_proxy)(reserved1)(reserved2)(reserved3) )
    };
 
+   struct currency_stats {
+            asset          supply;
+            asset          max_supply;
+            account_name   issuer;
+
+            uint64_t primary_key()const { return supply.symbol.name(); }
+         };
+
+   typedef eosio::multi_index<N(stat), currency_stats> stats;
+
    typedef eosio::multi_index< N(voters), voter_info>  voters_table;
 
 

@@ -25,7 +25,6 @@ namespace eosiosystem {
    using eosio::print;
    using eosio::singleton;
    using eosio::transaction;
-   using eosio::token;
 
    /**
     *  This method will create a producer_config and producer_info object for 'producer'
