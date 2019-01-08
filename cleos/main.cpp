@@ -993,7 +993,7 @@ struct update_producer_subcommand {
       auto update_producer = actionRoot->add_subcommand("updateproducer", localized("Update a producer"));
       update_producer->add_option("account", producer_str, localized("The account to update as a producer"))->required();
       update_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
-      register_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
+      update_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
       update_producer->add_option("url", url, localized("url where info about producer can be found"), true);
       update_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
       add_standard_transaction_options(update_producer, "account@active");
