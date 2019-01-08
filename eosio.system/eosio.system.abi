@@ -484,8 +484,8 @@
       "type": "regproducer",
       "ricardian_contract": ""
    },{
-      "name": "updateproducer",
-      "type": "updateproducer",
+      "name": "updateprod",
+      "type": "updateprod",
       "ricardian_contract": ""
    },{
       "name": "setram",
