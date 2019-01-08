@@ -75,6 +75,8 @@ namespace eosiosystem {
       int32_t                       privIdx = 31;
       double                        total_votes = 0;
       double                        decrease_vote_weight = 0;
+      eosio::asset                  maximum_supply;
+      eosio::asset                  transfer_ratio;
       eosio::public_key             producer_key; /// a packed public key object
       bool                          is_active = true;
       std::string                   url;
@@ -141,7 +143,7 @@ namespace eosiosystem {
       // EOSLIB_SERIALIZE( producer_info, (owner)(vote_weight_window)(vote_weight_window_date)(vote_window_state)(privIdx)(producer_key)(is_active)(url)
       //                   (unpaid_blocks)(last_claim_time)(location) )
 
-      EOSLIB_SERIALIZE( producer_info, (owner)(vote_weight_window)(vote_weight_window_date)(vote_window_state)(privIdx)(total_votes)(decrease_vote_weight)(producer_key)(is_active)(url)
+      EOSLIB_SERIALIZE( producer_info, (owner)(vote_weight_window)(vote_weight_window_date)(vote_window_state)(privIdx)(total_votes)(decrease_vote_weight)(maximum_supply)(transfer_ratio)(producer_key)(is_active)(url)
                         (unpaid_blocks)(last_claim_time)(location) )
    };
 

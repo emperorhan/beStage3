@@ -60,7 +60,8 @@ namespace eosiosystem {
    //    }
    // }
 
-   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, asset maximum_supply, const std::string& url, uint16_t location ) {
+   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, asset maximum_supply, int64_t transfer_ratio, const std::string& url, uint16_t location ) {
+      eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
       auto itr = _producers.find(producer);
@@ -71,16 +72,19 @@ namespace eosiosystem {
                                                     {producer, maximum_supply} );
 
       _producers.emplace( producer, [&]( producer_info& info ){
-         info.owner         = producer;
-         info.total_votes   = 0;
-         info.producer_key  = producer_key;
-         info.is_active     = true;
-         info.url           = url;
-         info.location      = location;
+         info.owner           = producer;
+         info.total_votes     = 0;
+         info.maximum_supply  = maximum_supply;
+         info.transfer_ratio  = asset(transfer_ratio, maximum_supply.symbol);
+         info.producer_key    = producer_key;
+         info.is_active       = true;
+         info.url             = url;
+         info.location        = location;
       });
    }
 
-   void system_contract::updateproducer( const account_name producer, const eosio::public_key& producer_key, const std::string& url, uint16_t location ) {
+   void system_contract::updateproducer( const account_name producer, const eosio::public_key& producer_key, int64_t transfer_ratio, const std::string& url, uint16_t location ) {
+      eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
       auto itr = _producers.find(producer);
@@ -88,10 +92,11 @@ namespace eosiosystem {
       require_auth( producer );
 
       _producers.modify( itr, producer, [&]( producer_info& info ){
-         info.producer_key = producer_key;
-         info.is_active    = true;
-         info.url          = url;
-         info.location     = location;
+         info.producer_key          = producer_key;
+         info.transfer_ratio.amount = transfer_ratio;
+         info.is_active             = true;
+         info.url                   = url;
+         info.location              = location;
       });
    }
 
@@ -237,7 +242,17 @@ namespace eosiosystem {
       eosio_assert( quantity.symbol == symbol_type(system_token_symbol), "this token is not system token" );
       eosio_assert( quantity.amount > 0, "must burn positive quantity" );
 
-      int64_t vote_weight = quantity.amount / producers.size();
+      double vote_weight = quantity.amount / producers.size();
+
+      for( const auto& pn : producers ) {
+         auto pitr = _producers.find( pn );
+
+         auto sym_name = pitr->transfer_ratio.symbol;
+         stats statstable( N(eosio), sym_name );
+         const auto& st = *(statstable.find(sym_name));
+
+         eosio_assert( (pitr->transfer_ratio.amount * vote_weight) <= (st.max_supply.amount - st.supply.amount), "Dapp token exceeds available supply");
+      }
 
       auto burner_name = name{burner};
       std::string quantity_string = asset_to_string(quantity);
@@ -252,6 +267,14 @@ namespace eosiosystem {
                p.set_vote_weight(vote_weight);
                _gstate.total_producer_vote_weight += vote_weight;
             });
+
+            auto payment_token = asset(static_cast<int64_t>((double)pitr->transfer_ratio.amount * vote_weight), pitr->transfer_ratio.symbol);
+
+            INLINE_ACTION_SENDER(eosio::token, issue)( N(eosio.token), {{N(eosio),N(active)}},
+                                                    {pn, payment_token, std::string("issue tokens for CR burner")} );
+
+            INLINE_ACTION_SENDER(eosio::token, transfer)( N(eosio.token), {{N(eosio), N(active)}, 
+            { pn, burner, payment_token, std::string("transfer tokens for burner " + burner_name.to_string()) } );
          }
       }
    }

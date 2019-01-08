@@ -271,6 +271,8 @@
          {"name":"privIdx",                 "type":"int32"},
          {"name":"total_votes",             "type":"float64"},
          {"name":"decrease_vote_weight",    "type":"float64"},
+         {"name":"maximum_supply",          "type":"asset"},
+         {"name":"transfer_ratio",          "type":"asset"},
          {"name":"producer_key",            "type":"public_key"},
          {"name":"is_active",               "type":"bool"},
          {"name":"url",                     "type":"string"},
@@ -284,9 +286,11 @@
       "fields": [
         {"name":"producer",       "type":"account_name"},
         {"name":"producer_key",   "type":"public_key"},
+        {"name":"maximum_supply", "type":"asset"},
+        {"name":"transfer_ratio", "type":"int64"},
         {"name":"url",            "type":"string"},
-        {"name":"location",       "type":"uint16"},
-        {"name":"maximum_supply", "type":"asset"}
+        {"name":"location",       "type":"uint16"}
+        
       ]
     },{
       "name": "updateproducer",
@@ -294,6 +298,7 @@
       "fields": [
         {"name":"producer",     "type":"account_name"},
         {"name":"producer_key", "type":"public_key"},
+        {"name":"transfer_ratio", "type":"int64"},
         {"name":"url",          "type":"string"},
         {"name":"location",     "type":"uint16"}
       ]
