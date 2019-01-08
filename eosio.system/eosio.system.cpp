@@ -193,7 +193,7 @@ EOSIO_ABI( eosiosystem::system_contract,
      (buyrambytes)(buyram)(sellram)(delegatebw)(undelegatebw)(refund)
      // voting.cpp
    //   (regproducer)(unregprod)(voteproducer)(regproxy)
-     (regproducer)(updateproducer)(unregprod)(voteproducer)
+     (regproducer)(updateprod)(unregprod)(voteproducer)
      // producer_pay.cpp
      (onblock)(claimrewards)
 )
