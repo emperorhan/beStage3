@@ -68,7 +68,7 @@ namespace eosiosystem {
       eosio_assert( itr == _producers.end(), "producer name is already exist" );
       require_auth( producer );
 
-      INLINE_ACTION_SENDER(eosio::token, create)( N(eosio.token), {producer,N(active)}},
+      INLINE_ACTION_SENDER(eosio::token, create)( N(eosio.token), {producer,N(active)},
                                                     {producer, maximum_supply} );
 
       _producers.emplace( producer, [&]( producer_info& info ){
