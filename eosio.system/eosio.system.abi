@@ -287,7 +287,7 @@
         {"name":"producer",       "type":"account_name"},
         {"name":"producer_key",   "type":"public_key"},
         {"name":"maximum_supply", "type":"asset"},
-        {"name":"transfer_ratio", "type":"int64"},
+        {"name":"transfer_ratio", "type":"float64"},
         {"name":"url",            "type":"string"},
         {"name":"location",       "type":"uint16"}
         
@@ -296,11 +296,11 @@
       "name": "updateproducer",
       "base": "",
       "fields": [
-        {"name":"producer",     "type":"account_name"},
-        {"name":"producer_key", "type":"public_key"},
-        {"name":"transfer_ratio", "type":"int64"},
-        {"name":"url",          "type":"string"},
-        {"name":"location",     "type":"uint16"}
+        {"name":"producer",       "type":"account_name"},
+        {"name":"producer_key",   "type":"public_key"},
+        {"name":"transfer_ratio", "type":"float64"},
+        {"name":"url",            "type":"string"},
+        {"name":"location",       "type":"uint16"}
       ]
     },{
       "name": "unregprod",

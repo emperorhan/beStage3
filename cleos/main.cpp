@@ -954,7 +954,7 @@ struct register_producer_subcommand {
    string producer_str;
    string producer_key_str;
    string max_supply;
-   int64_t transfer_ratio = 0;
+   double transfer_ratio = 0;
    string url;
    uint16_t loc = 0;
 
