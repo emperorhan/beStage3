@@ -975,7 +975,7 @@ struct register_producer_subcommand {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
 
-         auto regprod_var = regproducer_variant(producer_str, producer_key, max_supply, transfer_ratio, url, loc );
+         auto regprod_var = regproducer_variant(producer_str, producer_key, to_asset(max_supply), transfer_ratio, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
       });
