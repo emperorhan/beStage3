@@ -557,7 +557,7 @@ chain::action create_delegate(const name& from, const name& receiver, const asse
                         config::system_account_name, N(delegatebw), act_payload);
 }
 
-fc::variant regproducer_variant(const account_name& producer, const public_key_type& key, asset maximum_supply, int64_t transfer_ratio, const string& url, uint16_t location) {
+fc::variant regproducer_variant(const account_name& producer, const public_key_type& key, asset maximum_supply, double transfer_ratio, const string& url, uint16_t location) {
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
@@ -568,7 +568,7 @@ fc::variant regproducer_variant(const account_name& producer, const public_key_t
             ;
 }
 
-fc::variant updateproducer_variant(const account_name& producer, const public_key_type& key, int64_t transfer_ratio, const string& url, uint16_t location) {
+fc::variant updateproducer_variant(const account_name& producer, const public_key_type& key, double transfer_ratio, const string& url, uint16_t location) {
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
