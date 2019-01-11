@@ -557,27 +557,6 @@ chain::action create_delegate(const name& from, const name& receiver, const asse
                         config::system_account_name, N(delegatebw), act_payload);
 }
 
-fc::variant regproducer_variant(const account_name& producer, const public_key_type& key, asset maximum_supply, double transfer_ratio, const string& url, uint16_t location) {
-   return fc::mutable_variant_object()
-            ("producer", producer)
-            ("producer_key", key)
-            ("maximum_supply", maximum_supply)
-            ("transfer_ratio", transfer_ratio)
-            ("url", url)
-            ("location", location)
-            ;
-}
-
-fc::variant updateprod_variant(const account_name& producer, const public_key_type& key, double transfer_ratio, const string& url, uint16_t location) {
-   return fc::mutable_variant_object()
-            ("producer", producer)
-            ("producer_key", key)
-            ("transfer_ratio", transfer_ratio)
-            ("url", url)
-            ("location", location)
-            ;
-}
-
 chain::action create_open(const string& contract, const name& owner, symbol sym, const name& ram_payer) {
    auto open_ = fc::mutable_variant_object
       ("owner", owner)
@@ -697,6 +676,27 @@ asset to_asset( account_name code, const string& s ) {
 
 inline asset to_asset( const string& s ) {
    return to_asset( N(eosio.token), s );
+}
+
+fc::variant regproducer_variant(const account_name& producer, const public_key_type& key, string maximum_supply, double transfer_ratio, const string& url, uint16_t location) {
+   return fc::mutable_variant_object()
+            ("producer", producer)
+            ("producer_key", key)
+            ("maximum_supply", maximum_supply)
+            ("transfer_ratio", transfer_ratio)
+            ("url", url)
+            ("location", location)
+            ;
+}
+
+fc::variant updateprod_variant(const account_name& producer, const public_key_type& key, double transfer_ratio, const string& url, uint16_t location) {
+   return fc::mutable_variant_object()
+            ("producer", producer)
+            ("producer_key", key)
+            ("transfer_ratio", transfer_ratio)
+            ("url", url)
+            ("location", location)
+            ;
 }
 
 struct set_account_permission_subcommand {
@@ -975,7 +975,7 @@ struct register_producer_subcommand {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
 
-         auto regprod_var = regproducer_variant(producer_str, producer_key, to_asset(max_supply), transfer_ratio, url, loc );
+         auto regprod_var = regproducer_variant(producer_str, producer_key, max_supply, transfer_ratio, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
       });
@@ -985,7 +985,7 @@ struct register_producer_subcommand {
 struct update_producer_subcommand {
    string producer_str;
    string producer_key_str;
-   int64_t transfer_ratio = 0;
+   double transfer_ratio = 0;
    string url;
    uint16_t loc = 0;
 
