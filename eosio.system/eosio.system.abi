@@ -286,7 +286,7 @@
       "fields": [
         {"name":"producer",       "type":"account_name"},
         {"name":"producer_key",   "type":"public_key"},
-        {"name":"maximum_supply", "type":"asset"},
+        {"name":"maximum_supply", "type":"string"},
         {"name":"transfer_ratio", "type":"float64"},
         {"name":"url",            "type":"string"},
         {"name":"location",       "type":"uint16"}
