@@ -14,6 +14,8 @@
 #include <eosiolib/singleton.hpp>
 #include <eosiolib/transaction.hpp>
 #include <eosio.token/eosio.token.hpp>
+#include <fc/reflect/variant.hpp>
+
 
 #include <algorithm>
 #include <cmath>
