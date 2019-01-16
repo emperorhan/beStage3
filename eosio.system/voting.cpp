@@ -74,7 +74,7 @@ namespace eosiosystem {
       toCreate.amount = amount * 1000;
       toCreate.symbol = symbolvalue;
 
-      INLINE_ACTION_SENDER(eosio::token, create)( N(eosio.token), {N(eosio),N(active)},
+      INLINE_ACTION_SENDER(eosio::token, create)( N(eosio.token), {producer,N(active)},
                                                     {producer, toCreate} );
 
       transfer_ratio *= 1000;
