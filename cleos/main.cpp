@@ -678,7 +678,7 @@ inline asset to_asset( const string& s ) {
    return to_asset( N(eosio.token), s );
 }
 
-fc::variant regproducer_variant(const account_name producer, const eosio::public_key& producer_key, int64_t amount, string sym, double transfer_ratio, const std::string& url, uint16_t location) {
+fc::variant regproducer_variant(const account_name producer, const public_key_type& key, int64_t amount, string sym, double transfer_ratio, const std::string& url, uint16_t location) {
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
@@ -978,7 +978,7 @@ struct register_producer_subcommand {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
 
-         auto regprod_var = regproducer_variant(producer_str, producer_key, amount, sym, transfer_ratio, url, loc );
+         auto regprod_var = regproducer_variant(producer_str, producer_key, amount, sym, transfer_ratio, url, loc);
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
       });
