@@ -271,7 +271,7 @@ namespace eosiosystem {
 
          // functions defined in voting.cpp
 
-         void regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, string sym, double transfer_ratio, const std::string& url, uint16_t location );
+         void regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, std::string sym, double transfer_ratio, const std::string& url, uint16_t location );
 
          void updateprod( const account_name producer, const public_key& producer_key, double transfer_ratio, const std::string& url, uint16_t location );
 
