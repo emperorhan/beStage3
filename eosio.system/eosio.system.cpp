@@ -171,7 +171,6 @@ namespace eosiosystem {
             }
          }
       }
-      print("NEW ACOUNT!\n");
 
       user_resources_table  userres( _self, newact);
 
