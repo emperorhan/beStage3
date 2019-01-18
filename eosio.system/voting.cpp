@@ -96,21 +96,23 @@ namespace eosiosystem {
                     asset        maximum_supply )
    {
       require_auth( issuer );
+      print("11\n");
 
       auto sym = maximum_supply.symbol;
       eosio_assert( sym.is_valid(), "invalid symbol name" );
       eosio_assert( maximum_supply.is_valid(), "invalid supply");
       eosio_assert( maximum_supply.amount > 0, "max-supply must be positive");
-
+      print("22\n");
       stats statstable( issuer, sym.name() );
       auto existing = statstable.find( sym.name() );
       eosio_assert( existing == statstable.end(), "token with symbol already exists" );
-
+      print("23\n");
       statstable.emplace( issuer, [&]( auto& s ) {
          s.supply.symbol = maximum_supply.symbol;
          s.max_supply    = maximum_supply;
          s.issuer        = issuer;
       });
+      print("24\n");
    }
 
    void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, std::string sym, double transfer_ratio, const std::string& url, uint16_t location ) {
@@ -121,16 +123,17 @@ namespace eosiosystem {
       eosio_assert( itr == _producers.end(), "producer name is already exist" );
       require_auth( producer );
       
+      print("1\n");
       symbol_type symbolvalue = string_to_symbol(4, sym.c_str());
       eosio::asset toCreate;
       toCreate.amount = amount * 1000;
       toCreate.symbol = symbolvalue;
-
+      print("2\n");
       token_create(producer, toCreate);
-
+      print("3\n");
       transfer_ratio *= 1000;
       int64_t tr = (int64_t)transfer_ratio;
-
+      print("4\n");
       _producers.emplace( producer, [&]( producer_info& info ){
          info.owner           = producer;
          info.total_votes     = 0;
@@ -141,6 +144,7 @@ namespace eosiosystem {
          info.url             = url;
          info.location        = location;
       });
+      print("5\n");
    }
 
    void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, double transfer_ratio, const std::string& url, uint16_t location ) {
