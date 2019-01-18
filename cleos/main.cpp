@@ -678,11 +678,13 @@ inline asset to_asset( const string& s ) {
    return to_asset( N(eosio.token), s );
 }
 
-fc::variant regproducer_variant(const account_name producer, const public_key_type& key, string transfer_ratio, const std::string& url, uint16_t location) {
+fc::variant regproducer_variant(const account_name producer, const public_key_type& key, int64_t amount, std::string sym, double transfer_ratio, const std::string& url, uint16_t location) {
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
-            ("transfer_ratio", to_asset(transfer_ratio))
+            ("amount", amount)
+            ("sym", sym)
+            ("transfer_ratio", transfer_ratio)
             ("url", url)
             ("location", location)
             ;
@@ -692,11 +694,31 @@ fc::variant updateprod_variant(const account_name& producer, const public_key_ty
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
-            ("transfer_ratio", to_asset(transfer_ratio))
+            ("transfer_ratio", transfer_ratio)
             ("url", url)
             ("location", location)
             ;
 }
+
+// fc::variant regproducer_variant(const account_name producer, const public_key_type& key, string transfer_ratio, const std::string& url, uint16_t location) {
+//    return fc::mutable_variant_object()
+//             ("producer", producer)
+//             ("producer_key", key)
+//             ("transfer_ratio", to_asset(transfer_ratio))
+//             ("url", url)
+//             ("location", location)
+//             ;
+// }
+
+// fc::variant updateprod_variant(const account_name& producer, const public_key_type& key, string transfer_ratio, const string& url, uint16_t location) {
+//    return fc::mutable_variant_object()
+//             ("producer", producer)
+//             ("producer_key", key)
+//             ("transfer_ratio", to_asset(transfer_ratio))
+//             ("url", url)
+//             ("location", location)
+//             ;
+// }
 
 struct set_account_permission_subcommand {
    name account;
@@ -952,7 +974,9 @@ CLI::callback_t obsoleted_option_host_port = [](CLI::results_t) {
 struct register_producer_subcommand {
    string producer_str;
    string producer_key_str;
-   string transfer_ratio;
+   int64_t amount;
+   string sym;
+   double transfer_ratio = 0;
    string url;
    uint16_t loc = 0;
 
@@ -960,6 +984,8 @@ struct register_producer_subcommand {
       auto register_producer = actionRoot->add_subcommand("regproducer", localized("Register a new producer"));
       register_producer->add_option("account", producer_str, localized("The account to register as a producer"))->required();
       register_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
+      register_producer->add_option("amount", amount, localized("The amount of tokens to create."))->required();
+      register_producer->add_option("sym", sym, localized("The symbol of tokens to create."))->required();
       register_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
       register_producer->add_option("url", url, localized("url where info about producer can be found"), true);
       register_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
@@ -972,7 +998,7 @@ struct register_producer_subcommand {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
 
-         auto regprod_var = regproducer_variant(producer_str, producer_key, transfer_ratio, url, loc);
+         auto regprod_var = regproducer_variant(producer_str, producer_key, amount, sym, transfer_ratio, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
       });
@@ -982,7 +1008,7 @@ struct register_producer_subcommand {
 struct update_producer_subcommand {
    string producer_str;
    string producer_key_str;
-   string transfer_ratio;
+   double transfer_ratio;
    string url;
    uint16_t loc = 0;
 

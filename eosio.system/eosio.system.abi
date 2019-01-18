@@ -286,7 +286,9 @@
       "fields": [
         {"name":"producer",       "type":"account_name"},
         {"name":"producer_key",   "type":"public_key"},
-        {"name":"transfer_ratio", "type":"asset"},
+        {"name":"amount",         "type":"int64"},
+        {"name":"sym",            "type":"string"},
+        {"name":"transfer_ratio", "type":"float64"},
         {"name":"url",            "type":"string"},
         {"name":"location",       "type":"uint16"}
       ]
@@ -296,7 +298,7 @@
       "fields": [
         {"name":"producer",       "type":"account_name"},
         {"name":"producer_key",   "type":"public_key"},
-        {"name":"transfer_ratio", "type":"asset"},
+        {"name":"transfer_ratio", "type":"float64"},
         {"name":"url",            "type":"string"},
         {"name":"location",       "type":"uint16"}
       ]
