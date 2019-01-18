@@ -980,8 +980,8 @@ struct register_producer_subcommand {
    string url;
    uint16_t loc = 0;
 
-   std::cout<<"1111111111111111"<<std::endl;
    register_producer_subcommand(CLI::App* actionRoot) {
+      std::cout << "1111111111111111" << std::endl;
       auto register_producer = actionRoot->add_subcommand("regproducer", localized("Register a new producer"));
       register_producer->add_option("account", producer_str, localized("The account to register as a producer"))->required();
       register_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
@@ -991,18 +991,18 @@ struct register_producer_subcommand {
       register_producer->add_option("url", url, localized("url where info about producer can be found"), true);
       register_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
       add_standard_transaction_options(register_producer, "account@active");
-      std::cout<<"222222222222222"<<std::endl;
+      std::cout << "222222222222222" << std::endl;
 
       register_producer->set_callback([this] {
          public_key_type producer_key;
          try {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
-         std::cout<<"333333333333333333333"<<std::endl;
+         std::cout << "333333333333333333333" << std::endl;
          auto regprod_var = regproducer_variant(producer_str, producer_key, amount, sym, transfer_ratio, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
-         std::cout<<"444444444444444444"<<std::endl;
+         std::cout << "444444444444444444" << std::endl;
       });
    }
 };
