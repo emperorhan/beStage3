@@ -93,12 +93,12 @@ namespace eosiosystem {
    // }
 
    void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& url, uint16_t location ) {
-      eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
+      eosio_assert( transfer_ratio.amount > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
       auto itr = _producers.find(producer);
       eosio_assert( itr == _producers.end(), "producer name is already exist" );
-      eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." )
+      eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." );
       require_auth( producer );
       
       stats statstable( producer, transfer_ratio.symbol );
@@ -117,12 +117,12 @@ namespace eosiosystem {
    }
 
    void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& url, uint16_t location ) {
-      eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
+      eosio_assert( transfer_ratio.amount > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
       auto itr = _producers.find(producer);
       eosio_assert( itr != _producers.end(), "producer name is not exist" );
-      eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." )
+      eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." );
       require_auth( producer );
 
       _producers.modify( itr, producer, [&]( producer_info& info ){
