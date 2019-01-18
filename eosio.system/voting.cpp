@@ -61,30 +61,54 @@ namespace eosiosystem {
    //    }
    // }
 
-   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, std::string sym, double transfer_ratio, const std::string& url, uint16_t location ) {
+   // void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, std::string sym, double transfer_ratio, const std::string& url, uint16_t location ) {
+   //    eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
+   //    eosio_assert( url.size() < 512, "url too long" );
+   //    eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
+   //    auto itr = _producers.find(producer);
+   //    eosio_assert( itr == _producers.end(), "producer name is already exist" );
+   //    require_auth( producer );
+      
+   //    symbol_type symbolvalue = string_to_symbol(4, sym.c_str());
+   //    eosio::asset toCreate;
+   //    toCreate.amount = amount * 1000;
+   //    toCreate.symbol = symbolvalue;
+
+   //    INLINE_ACTION_SENDER(eosio::token, create)( N(eosio.token), {producer,N(active)},
+   //                                                  {producer, toCreate} );
+
+   //    transfer_ratio *= 1000;
+   //    int64_t tr = (int64_t)transfer_ratio;
+
+   //    _producers.emplace( producer, [&]( producer_info& info ){
+   //       info.owner           = producer;
+   //       info.total_votes     = 0;
+   //       info.maximum_supply  = toCreate;
+   //       info.transfer_ratio  = asset(tr, toCreate.symbol);
+   //       info.producer_key    = producer_key;
+   //       info.is_active       = true;
+   //       info.url             = url;
+   //       info.location        = location;
+   //    });
+   // }
+
+   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& url, uint16_t location ) {
       eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
       auto itr = _producers.find(producer);
       eosio_assert( itr == _producers.end(), "producer name is already exist" );
+      eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." )
       require_auth( producer );
       
-      symbol_type symbolvalue = string_to_symbol(4, sym.c_str());
-      eosio::asset toCreate;
-      toCreate.amount = amount * 1000;
-      toCreate.symbol = symbolvalue;
-
-      INLINE_ACTION_SENDER(eosio::token, create)( N(eosio.token), {producer,N(active)},
-                                                    {producer, toCreate} );
-
-      transfer_ratio *= 1000;
-      int64_t tr = (int64_t)transfer_ratio;
+      stats statstable( producer, transfer_ratio.symbol );
+      const auto& st = *(statstable.find(transfer_ratio.symbol));
 
       _producers.emplace( producer, [&]( producer_info& info ){
          info.owner           = producer;
          info.total_votes     = 0;
-         info.maximum_supply  = toCreate;
-         info.transfer_ratio  = asset(tr, toCreate.symbol);
+         info.maximum_supply  = st.max_supply;
+         info.transfer_ratio  = transfer_ratio;
          info.producer_key    = producer_key;
          info.is_active       = true;
          info.url             = url;
@@ -92,20 +116,18 @@ namespace eosiosystem {
       });
    }
 
-   void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, double transfer_ratio, const std::string& url, uint16_t location ) {
+   void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& url, uint16_t location ) {
       eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
       auto itr = _producers.find(producer);
       eosio_assert( itr != _producers.end(), "producer name is not exist" );
+      eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." )
       require_auth( producer );
-
-      transfer_ratio *= 1000;
-      int64_t tr = (int64_t)transfer_ratio;
 
       _producers.modify( itr, producer, [&]( producer_info& info ){
          info.producer_key          = producer_key;
-         info.transfer_ratio.amount = tr;
+         info.transfer_ratio        = transfer_ratio;
          info.is_active             = true;
          info.url                   = url;
          info.location              = location;
