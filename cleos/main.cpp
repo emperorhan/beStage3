@@ -690,7 +690,7 @@ fc::variant regproducer_variant(const account_name producer, const public_key_ty
             ;
 }
 
-fc::variant updateprod_variant(const account_name& producer, const public_key_type& key, string transfer_ratio, const string& url, uint16_t location) {
+fc::variant updateprod_variant(const account_name& producer, const public_key_type& key, double transfer_ratio, const string& url, uint16_t location) {
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
