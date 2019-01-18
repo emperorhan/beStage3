@@ -115,7 +115,7 @@ namespace eosiosystem {
       print("24\n");
    }
 
-   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, std::string sym, double transfer_ratio, const std::string& url, uint16_t location ) {
+   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, const std::string& sym, double transfer_ratio, const std::string& url, uint16_t location ) {
       eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );

@@ -678,7 +678,7 @@ inline asset to_asset( const string& s ) {
    return to_asset( N(eosio.token), s );
 }
 
-fc::variant regproducer_variant(const account_name producer, const public_key_type& key, int64_t amount, std::string sym, double transfer_ratio, const std::string& url, uint16_t location) {
+fc::variant regproducer_variant(const account_name& producer, const public_key_type& key, int64_t amount, const string& sym, double transfer_ratio, const string& url, uint16_t location) {
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
