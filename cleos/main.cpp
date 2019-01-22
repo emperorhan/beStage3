@@ -996,7 +996,7 @@ struct register_producer_subcommand {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
          std::cout << "333333333333333333333" << std::endl;
-         auto regprod_var = regproducer_variant(producer_str, producer_key_str, transfer_ratio, sym, url, loc );
+         auto regprod_var = regproducer_variant(producer_str, producer_key, transfer_ratio, sym, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
          std::cout << "444444444444444444" << std::endl;
@@ -1027,7 +1027,7 @@ struct update_producer_subcommand {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
 
-         auto updateprod_var = updateprod_variant(producer_str, producer_key_str, transfer_ratio, url, loc );
+         auto updateprod_var = updateprod_variant(producer_str, producer_key, transfer_ratio, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(updateprod), updateprod_var)});
       });
