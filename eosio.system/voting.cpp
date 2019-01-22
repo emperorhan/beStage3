@@ -92,63 +92,113 @@ namespace eosiosystem {
    //    });
    // }
 
-   void token_create( account_name issuer,
-                    asset        maximum_supply )
-   {
-      require_auth( issuer );
-      print("11\n");
+   // void token_create( account_name issuer,
+   //                  asset        maximum_supply )
+   // {
+   //    require_auth( issuer );
+   //    print("11\n");
 
-      auto sym = maximum_supply.symbol;
-      eosio_assert( sym.is_valid(), "invalid symbol name" );
-      eosio_assert( maximum_supply.is_valid(), "invalid supply");
-      eosio_assert( maximum_supply.amount > 0, "max-supply must be positive");
-      print("22\n");
-      stats statstable( issuer, sym.name() );
-      auto existing = statstable.find( sym.name() );
-      eosio_assert( existing == statstable.end(), "token with symbol already exists" );
-      print("23\n");
-      statstable.emplace( issuer, [&]( auto& s ) {
-         s.supply.symbol = maximum_supply.symbol;
-         s.max_supply    = maximum_supply;
-         s.issuer        = issuer;
-      });
-      print("24\n");
-   }
+   //    auto sym = maximum_supply.symbol;
+   //    eosio_assert( sym.is_valid(), "invalid symbol name" );
+   //    eosio_assert( maximum_supply.is_valid(), "invalid supply");
+   //    eosio_assert( maximum_supply.amount > 0, "max-supply must be positive");
+   //    print("22\n");
+   //    stats statstable( issuer, sym.name() );
+   //    auto existing = statstable.find( sym.name() );
+   //    eosio_assert( existing == statstable.end(), "token with symbol already exists" );
+   //    print("23\n");
+   //    statstable.emplace( issuer, [&]( auto& s ) {
+   //       s.supply.symbol = maximum_supply.symbol;
+   //       s.max_supply    = maximum_supply;
+   //       s.issuer        = issuer;
+   //    });
+   //    print("24\n");
+   // }
 
-   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, const std::string& sym, double transfer_ratio, const std::string& url, uint16_t location ) {
-      eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
+   // void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, const std::string& sym, double transfer_ratio, const std::string& url, uint16_t location ) {
+   //    eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
+   //    eosio_assert( url.size() < 512, "url too long" );
+   //    eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
+   //    auto itr = _producers.find(producer);
+   //    eosio_assert( itr == _producers.end(), "producer name is already exist" );
+   //    require_auth( producer );
+      
+   //    print("1\n");
+   //    symbol_type symbolvalue = string_to_symbol(4, sym.c_str());
+   //    eosio::asset toCreate;
+   //    toCreate.amount = amount * 1000;
+   //    toCreate.symbol = symbolvalue;
+   //    print("2\n");
+   //    token_create(producer, toCreate);
+   //    print("3\n");
+   //    transfer_ratio *= 1000;
+   //    int64_t tr = (int64_t)transfer_ratio;
+   //    print("4\n");
+   //    _producers.emplace( producer, [&]( producer_info& info ){
+   //       info.owner           = producer;
+   //       info.total_votes     = 0;
+   //       info.maximum_supply  = toCreate;
+   //       info.transfer_ratio  = asset(tr, toCreate.symbol);
+   //       info.producer_key    = producer_key;
+   //       info.is_active       = true;
+   //       info.url             = url;
+   //       info.location        = location;
+   //    });
+   //    print("5\n");
+   // }
+
+   // void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, double transfer_ratio, const std::string& url, uint16_t location ) {
+   //    eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
+   //    eosio_assert( url.size() < 512, "url too long" );
+   //    eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
+   //    auto itr = _producers.find(producer);
+   //    eosio_assert( itr != _producers.end(), "producer name is not exist" );
+   //    // eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." );
+   //    require_auth( producer );
+
+   //    transfer_ratio *= 1000;
+   //    int64_t tr = (int64_t)transfer_ratio;
+
+   //    _producers.modify( itr, producer, [&]( producer_info& info ){
+   //       info.producer_key          = producer_key;
+   //       info.is_active             = true;
+   //       info.url                   = url;
+   //       info.location              = location;
+   //       info.transfer_ratio.set_amount(tr);
+   //    });
+   // }
+
+   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& sym, const std::string& url, uint16_t location ) {
+      eosio_assert( transfer_ratio.amount > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
       auto itr = _producers.find(producer);
       eosio_assert( itr == _producers.end(), "producer name is already exist" );
       require_auth( producer );
+
+      symbol_type symbolValue = string_to_symbol(4, sym.c_str());
+      stats statstable( producer, symbolValue );
+      const auto& st = statstable.find( symbolValue.name() );
+      eosio_assert( st != statstable.end(), "token with symbol is not exists" );
+      eosio_assert( st->issuer == producer, "producer is not the issuer of the DAPP token" );
+      eosio_assert( st->supply.amount > transfer_ratio.amount, "at least the minimum token must be issued" );
       
-      print("1\n");
-      symbol_type symbolvalue = string_to_symbol(4, sym.c_str());
-      eosio::asset toCreate;
-      toCreate.amount = amount * 1000;
-      toCreate.symbol = symbolvalue;
-      print("2\n");
-      token_create(producer, toCreate);
-      print("3\n");
-      transfer_ratio *= 1000;
-      int64_t tr = (int64_t)transfer_ratio;
-      print("4\n");
+      transfer_ratio.symbol = symbolValue;
+      
       _producers.emplace( producer, [&]( producer_info& info ){
          info.owner           = producer;
          info.total_votes     = 0;
-         info.maximum_supply  = toCreate;
-         info.transfer_ratio  = asset(tr, toCreate.symbol);
+         info.maximum_supply  = asset(st->max_supply);
+         info.transfer_ratio  = asset(transfer_ratio);
          info.producer_key    = producer_key;
          info.is_active       = true;
          info.url             = url;
          info.location        = location;
       });
-      print("5\n");
    }
 
-   void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, double transfer_ratio, const std::string& url, uint16_t location ) {
-      eosio_assert( transfer_ratio > 0, "transfer ratio must be positive integer" );
+   void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& url, uint16_t location ) {
+      eosio_assert( transfer_ratio.amount > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
       auto itr = _producers.find(producer);
@@ -156,15 +206,12 @@ namespace eosiosystem {
       // eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." );
       require_auth( producer );
 
-      transfer_ratio *= 1000;
-      int64_t tr = (int64_t)transfer_ratio;
-
       _producers.modify( itr, producer, [&]( producer_info& info ){
          info.producer_key          = producer_key;
          info.is_active             = true;
          info.url                   = url;
          info.location              = location;
-         info.transfer_ratio.set_amount(tr);
+         info.transfer_ratio.set_amount(transfer_ratio.amount);
       });
    }
 
