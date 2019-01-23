@@ -678,12 +678,43 @@ inline asset to_asset( const string& s ) {
    return to_asset( N(eosio.token), s );
 }
 
-fc::variant regproducer_variant(const account_name& producer, const public_key_type& key, const string& transfer_ratio, const string& sym, const string& url, uint16_t location) {
+asset to_dapp_asset( account_name code, const string& s ) {
+   static map< pair<account_name, eosio::chain::symbol_code>, eosio::chain::symbol> cache;
+   auto a = asset::from_string( s );
+   eosio::chain::symbol_code sym = a.get_symbol().to_symbol_code();
+   auto it = cache.find( make_pair(code, sym) );
+   auto sym_str = a.symbol_name();
+   if ( it == cache.end() ) {
+      auto json = call(get_currency_stats_func, fc::mutable_variant_object("json", false)
+                       ("code", code)
+                       ("symbol", sym_str)
+      );
+      auto obj = json.get_object();
+      auto obj_it = obj.find( sym_str );
+      if (obj_it != obj.end()) {
+         auto result = obj_it->value().as<eosio::chain_apis::read_only::get_currency_stats_result>();
+         auto p = cache.emplace( make_pair( code, sym ), result.max_supply.get_symbol() );
+         it = p.first;
+      } else {
+         EOS_THROW(symbol_type_exception, "Symbol ${s} is not supported by token contract ${c}", ("s", sym_str)("c", code));
+      }
+   }
+   auto expected_symbol = it->second;
+   if ( a.decimals() < expected_symbol.decimals() ) {
+      auto factor = expected_symbol.precision() / a.precision();
+      auto a_old = a;
+      a = asset( a.get_amount() * factor, expected_symbol );
+   } else if ( a.decimals() > expected_symbol.decimals() ) {
+      EOS_THROW(symbol_type_exception, "Too many decimal digits in ${a}, only ${d} supported", ("a", a)("d", expected_symbol.decimals()));
+   } // else precision matches
+   return a;
+}
+
+fc::variant regproducer_variant(const account_name& producer, const public_key_type& key, const string& transfer_ratio, const string& url, uint16_t location) {
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
-            ("transfer_ratio", to_asset(transfer_ratio))
-            ("sym", sym)
+            ("transfer_ratio", to_dapp_asset(producer, transfer_ratio))
             ("url", url)
             ("location", location)
             ;
@@ -693,7 +724,7 @@ fc::variant updateprod_variant(const account_name& producer, const public_key_ty
    return fc::mutable_variant_object()
             ("producer", producer)
             ("producer_key", key)
-            ("transfer_ratio", to_asset(transfer_ratio))
+            ("transfer_ratio", to_dapp_asset(producer, transfer_ratio))
             ("url", url)
             ("location", location)
             ;
@@ -974,7 +1005,6 @@ struct register_producer_subcommand {
    string producer_str;
    string producer_key_str;
    string transfer_ratio;
-   string sym;
    string url;
    uint16_t loc = 0;
 
@@ -984,7 +1014,6 @@ struct register_producer_subcommand {
       register_producer->add_option("account", producer_str, localized("The account to register as a producer"))->required();
       register_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
       register_producer->add_option("transfer_ratio", transfer_ratio, localized("Percentage of payments per CR."))->required();
-      register_producer->add_option("sym", sym, localized("The symbol of tokens to create."))->required();
       register_producer->add_option("url", url, localized("url where info about producer can be found"), true);
       register_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
       add_standard_transaction_options(register_producer, "account@active");
@@ -996,7 +1025,7 @@ struct register_producer_subcommand {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
          std::cout << "333333333333333333333" << std::endl;
-         auto regprod_var = regproducer_variant(producer_str, producer_key, transfer_ratio, sym, url, loc );
+         auto regprod_var = regproducer_variant(producer_str, producer_key, transfer_ratio, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
          std::cout << "444444444444444444" << std::endl;

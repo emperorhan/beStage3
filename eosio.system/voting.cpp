@@ -168,7 +168,7 @@ namespace eosiosystem {
    //    });
    // }
 
-   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& sym, const std::string& url, uint16_t location ) {
+   void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& url, uint16_t location ) {
       eosio_assert( transfer_ratio.amount > 0, "transfer ratio must be positive integer" );
       eosio_assert( url.size() < 512, "url too long" );
       eosio_assert( producer_key != eosio::public_key(), "public key should not be the default value" );
@@ -176,14 +176,12 @@ namespace eosiosystem {
       eosio_assert( itr == _producers.end(), "producer name is already exist" );
       require_auth( producer );
 
-      symbol_type symbolValue = string_to_symbol(4, sym.c_str());
-      stats statstable( producer, symbolValue );
-      const auto& st = statstable.find( symbolValue.name() );
+      auto sym = transfer_ratio.symbol;
+      stats statstable( producer, sym.name() );
+      const auto& st = statstable.find( sym.name() );
       eosio_assert( st != statstable.end(), "token with symbol is not exists" );
       eosio_assert( st->issuer == producer, "producer is not the issuer of the DAPP token" );
       eosio_assert( st->supply.amount > transfer_ratio.amount, "at least the minimum token must be issued" );
-      
-      transfer_ratio.symbol = symbolValue;
       
       _producers.emplace( producer, [&]( producer_info& info ){
          info.owner           = producer;
@@ -206,12 +204,19 @@ namespace eosiosystem {
       // eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." );
       require_auth( producer );
 
+      auto sym = transfer_ratio.symbol;
+      stats statstable( producer, sym.name() );
+      const auto& st = statstable.find( sym.name() );
+      eosio_assert( st != statstable.end(), "token with symbol is not exists" );
+      eosio_assert( st->issuer == producer, "producer is not the issuer of the DAPP token" );
+      eosio_assert( st->supply.amount > transfer_ratio.amount, "at least the minimum token must be issued" );
+
       _producers.modify( itr, producer, [&]( producer_info& info ){
          info.producer_key          = producer_key;
          info.is_active             = true;
+         info.transfer_ratio        = asset(transfer_ratio);
          info.url                   = url;
          info.location              = location;
-         info.transfer_ratio.set_amount(transfer_ratio.amount);
       });
    }
 
