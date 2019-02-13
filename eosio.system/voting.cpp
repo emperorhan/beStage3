@@ -175,14 +175,14 @@ namespace eosiosystem {
       auto itr = _producers.find(producer);
       eosio_assert( itr == _producers.end(), "producer name is already exist" );
       require_auth( producer );
-
+      print("reg1");
       auto sym = transfer_ratio.symbol;
       stats statstable( producer, sym.name() );
       const auto& st = statstable.find( sym.name() );
       eosio_assert( st != statstable.end(), "token with symbol is not exists" );
       eosio_assert( st->issuer == producer, "producer is not the issuer of the DAPP token" );
       eosio_assert( st->supply.amount > transfer_ratio.amount, "at least the minimum token must be issued" );
-      
+      print("reg2");
       _producers.emplace( producer, [&]( producer_info& info ){
          info.owner           = producer;
          info.total_votes     = 0;
@@ -193,6 +193,7 @@ namespace eosiosystem {
          info.url             = url;
          info.location        = location;
       });
+      print("reg3");
    }
 
    void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& url, uint16_t location ) {

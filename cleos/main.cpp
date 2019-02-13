@@ -682,7 +682,9 @@ asset to_dapp_asset( account_name code, const string& s ) {
    static map< pair<account_name, eosio::chain::symbol_code>, eosio::chain::symbol> cache;
    auto a = asset::from_string( s );
    eosio::chain::symbol_code sym = a.get_symbol().to_symbol_code();
+   printf("dapp asset1\n");
    auto it = cache.find( make_pair(code, sym) );
+   printf("dapp asset2\n");
    auto sym_str = a.symbol_name();
    if ( it == cache.end() ) {
       auto json = call(get_currency_stats_func, fc::mutable_variant_object("json", false)
@@ -699,6 +701,7 @@ asset to_dapp_asset( account_name code, const string& s ) {
          EOS_THROW(symbol_type_exception, "Symbol ${s} is not supported by token contract ${c}", ("s", sym_str)("c", code));
       }
    }
+   printf("dapp asset3\n");
    auto expected_symbol = it->second;
    if ( a.decimals() < expected_symbol.decimals() ) {
       auto factor = expected_symbol.precision() / a.precision();
@@ -1009,7 +1012,6 @@ struct register_producer_subcommand {
    uint16_t loc = 0;
 
    register_producer_subcommand(CLI::App* actionRoot) {
-      std::cout << "1111111111111111" << std::endl;
       auto register_producer = actionRoot->add_subcommand("regproducer", localized("Register a new producer"));
       register_producer->add_option("account", producer_str, localized("The account to register as a producer"))->required();
       register_producer->add_option("producer_key", producer_key_str, localized("The producer's public key"))->required();
@@ -1017,18 +1019,15 @@ struct register_producer_subcommand {
       register_producer->add_option("url", url, localized("url where info about producer can be found"), true);
       register_producer->add_option("location", loc, localized("relative location for purpose of nearest neighbor scheduling"), true);
       add_standard_transaction_options(register_producer, "account@active");
-      std::cout << "222222222222222" << std::endl;
 
       register_producer->set_callback([this] {
          public_key_type producer_key;
          try {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
-         std::cout << "333333333333333333333" << std::endl;
          auto regprod_var = regproducer_variant(producer_str, producer_key, transfer_ratio, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
-         std::cout << "444444444444444444" << std::endl;
       });
    }
 };
