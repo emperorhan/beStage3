@@ -1026,7 +1026,16 @@ struct register_producer_subcommand {
          try {
             producer_key = public_key_type(producer_key_str);
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
-         auto regprod_var = regproducer_variant(producer_str, producer_key, transfer_ratio, url, loc );
+         // auto regprod_var = regproducer_variant(producer_str, producer_key, transfer_ratio, url, loc );
+         fc::variant regprod_var = fc::mutable_variant_object()
+                  // ("voter_name", voter_str)
+                  // ("quantity", to_asset(burn_quantity))
+                  // ("producers", producer_names);
+                  ("producer", producer_str)
+                  ("producer_key", producer_key)
+                  ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
+                  ("url", url)
+                  ("location", location);
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          printf("cleos regp1\n");
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
