@@ -710,6 +710,7 @@ asset to_dapp_asset( account_name code, const string& s ) {
    } else if ( a.decimals() > expected_symbol.decimals() ) {
       EOS_THROW(symbol_type_exception, "Too many decimal digits in ${a}, only ${d} supported", ("a", a)("d", expected_symbol.decimals()));
    } // else precision matches
+   printf("dapp asset4\n");
    return a;
 }
 
@@ -1027,7 +1028,9 @@ struct register_producer_subcommand {
          } EOS_RETHROW_EXCEPTIONS(public_key_type_exception, "Invalid producer public key: ${public_key}", ("public_key", producer_key_str))
          auto regprod_var = regproducer_variant(producer_str, producer_key, transfer_ratio, url, loc );
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
+         printf("cleos regp1\n");
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
+         printf("cleos regp2\n");
       });
    }
 };
