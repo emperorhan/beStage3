@@ -287,7 +287,6 @@
         {"name":"producer",       "type":"account_name"},
         {"name":"producer_key",   "type":"public_key"},
         {"name":"transfer_ratio", "type":"asset"},
-        {"name":"sym",            "type":"string"},
         {"name":"url",            "type":"string"},
         {"name":"location",       "type":"uint16"}
       ]
