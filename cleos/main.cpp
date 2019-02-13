@@ -1035,7 +1035,7 @@ struct register_producer_subcommand {
                   ("producer_key", producer_key)
                   ("transfer_ratio", to_dapp_asset(producer_str, transfer_ratio))
                   ("url", url)
-                  ("location", location);
+                  ("location", loc);
          auto accountPermissions = get_account_permissions(tx_permission, {producer_str,config::active_name});
          printf("cleos regp1\n");
          send_actions({create_action(accountPermissions, config::system_account_name, N(regproducer), regprod_var)});
