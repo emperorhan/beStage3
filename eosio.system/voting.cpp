@@ -358,6 +358,7 @@ namespace eosiosystem {
 
    void system_contract::voteproducer( const account_name voter_name, const asset quantity, const std::vector<account_name>& producers ) {
       require_auth( voter_name );
+      print("vote!!!");
       update_votes( voter_name, quantity, producers );
    }
 

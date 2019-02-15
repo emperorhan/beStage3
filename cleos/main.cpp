@@ -1246,7 +1246,7 @@ struct vote_producers_subcommand {
       vote_producers->add_option("quantity", burn_quantity, localized("burn asset."))->required();
       vote_producers->add_option("producers", producer_names, localized("The account(s) to vote for. All options from this position and following will be treated as the producer list."))->required();
       add_standard_transaction_options(vote_producers, "voter@active");
-
+      printf("VOTE1\n");
       vote_producers->set_callback([this] {
 
          std::sort( producer_names.begin(), producer_names.end() );
@@ -1258,6 +1258,7 @@ struct vote_producers_subcommand {
          auto accountPermissions = get_account_permissions(tx_permission, {voter_str,config::active_name});
          send_actions({create_action(accountPermissions, config::system_account_name, N(voteproducer), act_payload)});
       });
+      printf("VOTE2\n");
    }
 };
 
