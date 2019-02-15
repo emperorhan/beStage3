@@ -208,7 +208,7 @@ namespace eosiosystem {
       // print("update prod");
       puts("AAA");
       printf("BBB\n");
-      std::cout<<"CCC"<<endl;
+      std::cout<<"CCC"<<std::endl;
       auto sym = transfer_ratio.symbol;
       stats statstable( producer, sym.name() );
       const auto& st = statstable.find( sym.name() );
