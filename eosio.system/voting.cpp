@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 namespace eosiosystem {
    using eosio::indexed_by;
