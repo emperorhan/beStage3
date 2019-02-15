@@ -404,16 +404,16 @@ namespace eosiosystem {
       eosio_assert( quantity.is_valid(), "invalid quantity" );
       eosio_assert( quantity.symbol == symbol_type(system_token_symbol), "this token is not system token" );
       eosio_assert( quantity.amount > 0, "must burn positive quantity" );
-
+      print("vote1");
       double vote_weight = quantity.amount / producers.size();
-
+      print("vote2");
       for( const auto& pn : producers ) {
          auto pitr = _producers.find( pn );
-
+         print("v");
          auto sym_name = pitr->transfer_ratio.symbol;
          stats statstable( N(eosio), sym_name );
          const auto& st = *(statstable.find(sym_name));
-
+         print("o");
          eosio_assert( (pitr->transfer_ratio.amount * vote_weight) <= (st.max_supply.amount - st.supply.amount), "Dapp token exceeds available supply");
       }
 
