@@ -96,23 +96,23 @@ namespace eosiosystem {
    //                  asset        maximum_supply )
    // {
    //    require_auth( issuer );
-   //    print("11\n");
+   
 
    //    auto sym = maximum_supply.symbol;
    //    eosio_assert( sym.is_valid(), "invalid symbol name" );
    //    eosio_assert( maximum_supply.is_valid(), "invalid supply");
    //    eosio_assert( maximum_supply.amount > 0, "max-supply must be positive");
-   //    print("22\n");
+   
    //    stats statstable( issuer, sym.name() );
    //    auto existing = statstable.find( sym.name() );
    //    eosio_assert( existing == statstable.end(), "token with symbol already exists" );
-   //    print("23\n");
+   
    //    statstable.emplace( issuer, [&]( auto& s ) {
    //       s.supply.symbol = maximum_supply.symbol;
    //       s.max_supply    = maximum_supply;
    //       s.issuer        = issuer;
    //    });
-   //    print("24\n");
+   
    // }
 
    // void system_contract::regproducer( const account_name producer, const eosio::public_key& producer_key, int64_t amount, const std::string& sym, double transfer_ratio, const std::string& url, uint16_t location ) {
@@ -123,17 +123,16 @@ namespace eosiosystem {
    //    eosio_assert( itr == _producers.end(), "producer name is already exist" );
    //    require_auth( producer );
       
-   //    print("1\n");
    //    symbol_type symbolvalue = string_to_symbol(4, sym.c_str());
    //    eosio::asset toCreate;
    //    toCreate.amount = amount * 1000;
    //    toCreate.symbol = symbolvalue;
-   //    print("2\n");
+
    //    token_create(producer, toCreate);
-   //    print("3\n");
+
    //    transfer_ratio *= 1000;
    //    int64_t tr = (int64_t)transfer_ratio;
-   //    print("4\n");
+
    //    _producers.emplace( producer, [&]( producer_info& info ){
    //       info.owner           = producer;
    //       info.total_votes     = 0;
@@ -144,7 +143,7 @@ namespace eosiosystem {
    //       info.url             = url;
    //       info.location        = location;
    //    });
-   //    print("5\n");
+
    // }
 
    // void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, double transfer_ratio, const std::string& url, uint16_t location ) {
@@ -175,14 +174,14 @@ namespace eosiosystem {
       auto itr = _producers.find(producer);
       eosio_assert( itr == _producers.end(), "producer name is already exist" );
       require_auth( producer );
-      print("reg1");
+
       auto sym = transfer_ratio.symbol;
       stats statstable( producer, sym.name() );
       const auto& st = statstable.find( sym.name() );
       eosio_assert( st != statstable.end(), "token with symbol is not exists" );
       eosio_assert( st->issuer == producer, "producer is not the issuer of the DAPP token" );
       eosio_assert( st->supply.amount > transfer_ratio.amount, "at least the minimum token must be issued" );
-      print("reg2");
+      
       _producers.emplace( producer, [&]( producer_info& info ){
          info.owner           = producer;
          info.total_votes     = 0;
@@ -193,7 +192,6 @@ namespace eosiosystem {
          info.url             = url;
          info.location        = location;
       });
-      print("reg3");
    }
 
    void system_contract::updateprod( const account_name producer, const eosio::public_key& producer_key, asset transfer_ratio, const std::string& url, uint16_t location ) {
@@ -204,9 +202,9 @@ namespace eosiosystem {
       eosio_assert( itr != _producers.end(), "producer name is not exist" );
       // eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." );
       require_auth( producer );
-      // print("update prod");
-      puts("AAA");
-      printf("BBB\n");
+
+      _gstate.temp_debug[0] = transfer_ratio.amount;
+
       auto sym = transfer_ratio.symbol;
       stats statstable( producer, sym.name() );
       const auto& st = statstable.find( sym.name() );
@@ -360,7 +358,7 @@ namespace eosiosystem {
 
    void system_contract::voteproducer( const account_name voter_name, const asset quantity, const std::vector<account_name>& producers ) {
       require_auth( voter_name );
-      print("vote!!!");
+      
       update_votes( voter_name, quantity, producers );
    }
 
@@ -407,16 +405,14 @@ namespace eosiosystem {
       eosio_assert( quantity.is_valid(), "invalid quantity" );
       eosio_assert( quantity.symbol == symbol_type(system_token_symbol), "this token is not system token" );
       eosio_assert( quantity.amount > 0, "must burn positive quantity" );
-      print("vote1");
+      
       double vote_weight = quantity.amount / producers.size();
-      print("vote2");
+      
       for( const auto& pn : producers ) {
          auto pitr = _producers.find( pn );
-         print("v");
          auto sym_name = pitr->transfer_ratio.symbol;
          stats statstable( N(eosio), sym_name );
          const auto& st = *(statstable.find(sym_name));
-         print("o");
          eosio_assert( (pitr->transfer_ratio.amount * vote_weight) <= (st.max_supply.amount - st.supply.amount), "Dapp token exceeds available supply");
       }
 
