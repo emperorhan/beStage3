@@ -204,7 +204,7 @@ namespace eosiosystem {
       eosio_assert( itr != _producers.end(), "producer name is not exist" );
       // eosio_assert( itr->transfer_ratio.symbol == transfer_ratio.symbol, "Invalid DAPP symbol." );
       require_auth( producer );
-
+      print("update prod");
       auto sym = transfer_ratio.symbol;
       stats statstable( producer, sym.name() );
       const auto& st = statstable.find( sym.name() );
