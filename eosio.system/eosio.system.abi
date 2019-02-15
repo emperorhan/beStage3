@@ -333,6 +333,14 @@
         {"name":"is_proxy",             "type":"bool"}
       ]
     },{
+      "name": "currency_stats",
+      "base": "",
+      "fields": [
+        {"name":"supply", "type":"asset"},
+        {"name":"max_supply", "type":"asset"},
+        {"name":"issuer", "type":"account_name"}
+      ]
+    },{
       "name": "claimrewards",
       "base": "",
       "fields": [
