@@ -405,22 +405,24 @@ namespace eosiosystem {
       eosio_assert( quantity.is_valid(), "invalid quantity" );
       eosio_assert( quantity.symbol == symbol_type(system_token_symbol), "this token is not system token" );
       eosio_assert( quantity.amount > 0, "must burn positive quantity" );
-      
+      _gstate.temp_debug[1] = quantity.amount;
       double vote_weight = quantity.amount / producers.size();
-      
+      _gstate.temp_debug[2] = quantity.amount + 1;
       for( const auto& pn : producers ) {
          auto pitr = _producers.find( pn );
          auto sym_name = pitr->transfer_ratio.symbol;
+         _gstate.temp_debug[3] = quantity.amount + 2;
          stats statstable( N(eosio), sym_name );
          const auto& st = *(statstable.find(sym_name));
          eosio_assert( (pitr->transfer_ratio.amount * vote_weight) <= (st.max_supply.amount - st.supply.amount), "Dapp token exceeds available supply");
+         _gstate.temp_debug[4] = quantity.amount + 3;
       }
 
       auto burner_name = name{burner};
       std::string quantity_string = asset_to_string(quantity);
       INLINE_ACTION_SENDER(eosio::token, transfer)( N(eosio.token), {burner, N(active)}, 
       { burner, N(eosio.burn), quantity, std::string(burner_name.to_string() + " transfer " + quantity_string + " for burn") } );
-
+      _gstate.temp_debug[5] = quantity.amount + 4;
       for( const auto& pn : producers ) {
          auto pitr = _producers.find( pn );
          if( pitr != _producers.end() ) {
@@ -436,6 +438,7 @@ namespace eosiosystem {
                                                     {burner, payment_token, std::string("issue tokens for CR burner")} );
          }
       }
+      _gstate.temp_debug[6] = quantity.amount + 5;
    }
 
    // double stake2vote( int64_t staked ) {
